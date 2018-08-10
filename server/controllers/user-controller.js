@@ -1,4 +1,5 @@
 let Person = require('../models/person.js');
+let crypto = require('../security/encrypt.js');
 
 /*
 Get all users
@@ -65,17 +66,38 @@ module.exports.getUserByEmail = function (req, res) {
 /*
 Creates an user in a DB
 */
-module.exports.postUser = function (req, res){
-    let person = new Person(req.body);
-    person.save(function(error){
-        if(error){
-            return res.status(500).json({
+module.exports.createUser = function (req, res){
+    let email = req.body.email;
+    Person.findOne({email : email})
+    .then(doc => {
+        if (!doc){
+            //let person = new Person(req.body);
+            let salt = crypto.generateRandomString(16);
+            let hashPass = crypto.sha512(req.body.pass, salt);
+            let person = new Person ({
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email,
+                pass: hashPass,
+                Salt: salt
+            });
+            person.save(function(error){
+            if(error){
+                console.log(error);
+                return res.status(500).json({
+                    sucess: false,
+                    msg:"Error calling the query"});
+            }else{
+                res.status(200).json({
+                    sucess: true,
+                    msg: "Success adding user"});
+        }
+    });
+        }
+        else{
+            return res.status(404).json({
                 sucess: false,
-                msg: "Error calling the query"});
-        }else{
-            res.status(200).json({
-                sucess: true,
-                msg: "Success adding user"});
+                msg: "That email already exists"});
         }
     });
 }

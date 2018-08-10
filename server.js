@@ -51,12 +51,13 @@ app.get('/api/get-user/:id', userController.getUser);
 
 //POST Methods
 app.post('/api/login', authenticateController.authenticate); 
+//app.post('/api/create-user', userController.createUser);
 
 //DELETE Methods
 app.delete('/api/delete-user/:id', userController.deleteUser);
 
 //Secure Rutes
-secureRoutes.post('/create-user', userController.postUser);
+secureRoutes.post('/create-user', userController.createUser);
 secureRoutes.post('/get-user-email/', userController.getUserByEmail);
 
 app.listen(9000, () => console.log('Listening on port 9000'));
