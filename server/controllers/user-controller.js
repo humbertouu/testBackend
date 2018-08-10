@@ -19,6 +19,7 @@ Get an user by specifing the ID
 module.exports.getUser = function (req, res) {
     Person.findById(req.params.id)
     .then(doc => {
+        //console.log(doc);
         if (!doc) {
             return res.status(404).json({
                 sucess: false,
@@ -27,7 +28,13 @@ module.exports.getUser = function (req, res) {
             return res.status(200).json(doc);   
         }
     })
-    .catch(error => next(error));
+    .catch(err => {
+        if (err){
+            return res.status(404).json({
+                sucess: false,
+                msg: "User not found"});
+        }
+    });
 }
 
 /*
@@ -46,7 +53,13 @@ module.exports.getUserByEmail = function (req, res) {
             res.json(doc);
         }
     })
-    .catch(error => next(error));   
+    .catch(err => {
+        if (err){
+            return res.status(404).json({
+                sucess: false,
+                msg: "User not found"});
+        }
+    });
 }
 
 /*
@@ -84,6 +97,11 @@ module.exports.deleteUser = function (req, res){
                 msg: "User deleted correctly"});
         }
     })
-    .catch(error => next(error));
-
+    .catch(err => {
+        if (err){
+            return res.status(404).json({
+                sucess: false,
+                msg: "User not found"});
+        }
+    });
 }

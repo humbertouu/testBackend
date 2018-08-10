@@ -23,5 +23,11 @@ module.exports.authenticate = function (req, res){
             });   
         }
     })
-    .catch(error => next(error));   
+    .catch(err => {
+        if (err){
+            return res.status(404).json({
+                sucess: false,
+                msg: "User not found"});
+        }
+    });
 } 
