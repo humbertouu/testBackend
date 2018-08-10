@@ -22,20 +22,26 @@ let config = require('./server/config/config.js');
 config.setConfig();
 mongoose.connect(process.env.MONGOOSE_CONNECT, {useNewUrlParser: true});
 
-//Middleware validation
+//Middleware validation for secure endpoints
 secureRoutes.use(function(req, res, next){
     let token = req.body.token || req.headers['token'];
     if (token){
         jwt.verify(token, process.env.SECRET_KEY, function (error, decode){
             if (error){
-                res.status(500).send('Invalid Token');
+                res.status(500).json({
+                    sucess: false,
+                    msg: "Invalid Token"
+                });
             }else{
                 next();
             }    
         });
     }
     else{
-        res.send("I do not have a token yet");
+        res.status(404).json({
+            sucess: false,
+            msg: "I do not have a token yet"
+        });
     }
 });
 
@@ -51,6 +57,7 @@ app.delete('/api/delete-user/:id', userController.deleteUser);
 
 //Secure Rutes
 secureRoutes.post('/create-user', userController.postUser);
+secureRoutes.post('/get-user-email/', userController.getUserByEmail);
 
 app.listen(9000, () => console.log('Listening on port 9000'));
 

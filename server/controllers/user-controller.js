@@ -31,6 +31,25 @@ module.exports.getUser = function (req, res) {
 }
 
 /*
+Get user specified by the email
+*/
+module.exports.getUserByEmail = function (req, res) {
+    let email = req.body.email;
+    Person.findOne({email : email})
+    .then(doc => {
+        if (!doc) {
+            return res.status(404).json({
+                sucess : false, 
+                msg: "User not found"});
+        }else{
+            //return res.status(200).json(doc);
+            res.json(doc);
+        }
+    })
+    .catch(error => next(error));   
+}
+
+/*
 Creates an user in a DB
 */
 module.exports.postUser = function (req, res){
